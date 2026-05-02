@@ -1,0 +1,64 @@
+
+autoload -Uz compinit && compinit
+autoload -Uz vcs_info
+precmd_vcs_info() { vcs_info }
+precmd_functions+=( precmd_vcs_info )
+setopt prompt_subst
+zstyle ':vcs_info:git:*' formats ' (%b)'
+PS1='[%*]%~${vcs_info_msg_0_} %# '
+
+alias ll="ls -l"
+alias dc='docker compose'
+
+export HISTSIZE=1000
+export SAVEHIST=100000
+
+function git_branch_del() {
+  git checkout $1;
+  git branch --merged|egrep -v '\*|staging|develop|master|main'|xargs git branch -d;
+}
+
+function git_diff() {
+  BASENAME=$(basename `pwd`)
+  BRANCH1=${1:master}
+  BRANCH2=`git symbolic-ref --short HEAD`
+  git archive --prefix=${BASENAME}_${BRANCH2}_diff/ HEAD `git diff ${BRANCH1} --diff-filter=ACMR --name-only ` | tar -x -C ~/Desktop/
+}
+
+source ~/.env
+export GH_TOKEN="$GH_TOKEN"
+
+# bin
+export PATH="$HOME/.local/bin:$PATH"
+
+# homebrew
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
+# direnv
+eval "$(direnv hook zsh)"
+
+## Google Cloud
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/y_okada/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/y_okada/google-cloud-sdk/completion.zsh.inc'; fi
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/y_okada/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/y_okada/google-cloud-sdk/path.zsh.inc'; fi
+
+## PostgreSQL
+export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
+export PATH="/opt/homebrew/opt/postgresql@17/bin:$PATH"
+
+### AI
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:$HOME/.lmstudio/bin"
+# End of LM Studio CLI section
+
+# kiro
+[[ "$TERM_PROGRAM" == "kiro" ]] && . "$(kiro --locate-shell-integration-path zsh)"
+
+# bun completions
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
