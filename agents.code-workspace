@@ -1,0 +1,32 @@
+{
+	"folders": [
+		{
+			"path": ".config"
+		},
+		{
+			"path": ".agents"
+		},
+		{
+			"path": ".claude"
+		},
+		{
+			"path": ".codex"
+		},
+		{
+			"path": ".copilot"
+		},
+		{
+			"path": ".kiro"
+		},
+		{
+			"path": ".ollama"
+		},
+		{
+			"path": ".gemini"
+		},
+		{
+			"path": ".opencode"
+		}
+	],
+	"settings": {}
+}
