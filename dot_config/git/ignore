@@ -1,0 +1,8 @@
+.DS_Store
+.vscode/launch.json
+.devcontainer
+docker-compose.override.yml
+AGENTS.md
+CLAUDE.md
+KNOWLEDGE.md
+.playwright-mcp

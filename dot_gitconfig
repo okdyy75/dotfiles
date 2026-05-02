@@ -1,0 +1,12 @@
+[user]
+    email = okdyy75@gmail.com
+    name = okdyy75
+[core]
+    autocrlf = false
+    longpaths = true
+[pull]
+    rebase = false
+[init]
+    defaultBranch = main
+[branch]
+    sort = -authordate
