@@ -1,0 +1,78 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(~/.agents/skills/**)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:docs.anthropic.com)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(mkdir:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(chmod:*)",
+      "Bash(sed:*)",
+      "Bash(tail:*)",
+      "Bash(npm install)",
+      "Bash(npm run:*)",
+      "Bash(gh api:*)",
+      "Bash(gh issue list:*)",
+      "Bash(gh repo view:*)",
+      "Bash(gh pr list:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr edit:*)",
+      "Bash(gh pr diff:*)",
+      "Bash(gh pr create:*)",
+      "Bash(gh pr checks:*)",
+      "Bash(git status:*)",
+      "Bash(git checkout:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git mv:*)",
+      "Bash(direnv exec . yarn:*)",
+      "Bash(lefthook run:*)",
+      "Bash(docker compose:*)",
+      "Bash(export RAILS_LOG_TO_STDOUT=true)",
+      "Read(./.claude/**)",
+      "mcp__serena",
+      "mcp__playwright"
+    ],
+    "deny": [
+      "Read(./bk/**)",
+      "Bash(rm -rf)",
+      "Bash(curl:*)",
+      "Bash(wget:*)"
+    ],
+    "ask": [],
+    "defaultMode": "acceptEdits"
+  },
+  "model": "opus",
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "osascript -e 'display notification \"タスクが完了しました\" with title \"Claude Code\" sound name \"Glass\"'"
+          }
+        ]
+      }
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline-command.sh"
+  },
+  "enabledPlugins": {
+    "frontend-design@claude-plugins-official": true,
+    "code-review@claude-plugins-official": true,
+    "ruby-lsp@claude-plugins-official": true
+  },
+  "sandbox": {
+    "enabled": true
+  },
+  "plansDirectory": "./.claude/plans",
+  "skipDangerousModePermissionPrompt": true,
+  "autoCompactEnabled": false
+}
