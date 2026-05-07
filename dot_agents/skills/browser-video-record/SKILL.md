@@ -1,6 +1,11 @@
 ---
 name: browser-video-record
-description: Record videos of website usage using Playwright MCP or Playwright Core. Includes handling dialogs, scrolling, video compression, and common automation patterns. Use when users want to capture screen recordings, create demo videos, document UI/UX flows, or record testing sessions. Triggers: "録画して", "動画撮って", "screen recording", "record video", "capture website usage", "confirm dialog", "playwright video"
+description: >-
+  Record videos of website usage using Playwright MCP or Playwright Core.
+  Includes handling dialogs, scrolling, video compression, and common automation patterns.
+  Use when users want to capture screen recordings, create demo videos, document UI/UX flows,
+  or record testing sessions. Triggers: "録画して", "動画撮って", "screen recording",
+  "record video", "capture website usage", "confirm dialog", "playwright video"
 ---
 
 # Browser Video Recording with Playwright
