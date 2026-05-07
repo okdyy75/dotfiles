@@ -15,6 +15,14 @@ chezmoi init https://github.com/okdyy75/dotfiles.git
 chezmoi apply
 ```
 
+## Skill取得
+
+```
+gh skill install okdyy75/dotfiles dot_agents/skills/browser-video-record \
+  --agent universal \
+  --dir ~/.agents/skills
+```
+
 ## other
 
 一部ファイルだけコピー
