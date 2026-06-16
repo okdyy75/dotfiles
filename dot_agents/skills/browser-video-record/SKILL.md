@@ -1,13 +1,12 @@
 ---
+description: 'Record videos of website usage using Playwright MCP or Playwright Core. Includes handling dialogs, scrolling, video compression, and common automation patterns. Use when users want to capture screen recordings, create demo videos, document UI/UX flows, or record testing sessions. Triggers: "録画して", "動画撮って", "screen recording", "record video", "capture website usage", "confirm dialog", "playwright video"'
+metadata:
+    github-path: dot_agents/skills/browser-video-record
+    github-ref: refs/heads/main
+    github-repo: https://github.com/okdyy75/dotfiles
+    github-tree-sha: 03efd236108ac2619c67115fd151c51b2720852f
 name: browser-video-record
-description: >-
-  Record videos of website usage using Playwright MCP or Playwright Core.
-  Includes handling dialogs, scrolling, video compression, and common automation patterns.
-  Use when users want to capture screen recordings, create demo videos, document UI/UX flows,
-  or record testing sessions. Triggers: "録画して", "動画撮って", "screen recording",
-  "record video", "capture website usage", "confirm dialog", "playwright video"
 ---
-
 # Browser Video Recording with Playwright
 
 Webアプリケーションの操作を動画として記録するためのスキル。Playwright MCPとPlaywright Coreの両方に対応。
@@ -199,6 +198,90 @@ ffmpeg -i input.webm \
 - `-crf 28`: 品質（17-28、低いほど高品質）
 - `-b:a 96k`: 音声ビットレート
 - `-movflags +faststart`: ストリーミング最適化
+
+### 2倍速版を作る（playwright-mcp で長くなりがちな動画の短縮）
+
+```bash
+ffmpeg -i input.mp4 -filter:v "setpts=0.5*PTS" -an output-2x.mp4
+```
+
+- `setpts=0.5*PTS`: 再生速度 2倍
+- `-an`: 音声削除（playwright-mcp の動画は基本無音）
+
+---
+
+## ⚠️ playwright-mcp のレイテンシ問題
+
+playwright-mcp 経由のツール呼び出しは **1 回あたり 2〜5 秒** のラウンドトリップがかかる。録画中も含めて静止時間として動画に映る。
+
+### 観測値（6 ステップ CRUD で計測）
+
+| 手法 | 動画長 |
+|---|---|
+| `browser_snapshot` を毎ステップ取って ref を探索 | 約 7〜8 分 |
+| `browser_evaluate` でセレクタ／クリック処理をバッチ化 | 約 5〜6 分 |
+| ffmpeg で 2倍速にした版 | 約 3 分 |
+
+### 短縮テクニック
+
+1. **`browser_snapshot` を呼ばない**。代わりに `browser_evaluate` で必要な情報を 1 回でまとめて取得:
+   ```javascript
+   () => Array.from(document.querySelectorAll('[role="dialog"] label'))
+     .map(l => ({ text: l.textContent.trim(), forId: l.getAttribute('for') }));
+   ```
+2. **クリック対象は CSS セレクタ（`#id` / `button >> text=...`）で `browser_click` する**。`ref=eXXX` は snapshot 依存で毎回取り直しが必要。
+3. **複数の DOM 操作（テキスト入力 + ボタンクリック）は 1 回の evaluate にまとめる**。
+4. **`browser_wait_for time=` は最小限**。3〜5 秒待ちが 6 回入ると 20 秒以上動画が伸びる。サーバ応答後の DOM 反映を待ちたい場合は次の evaluate でポーリングする手もある。
+5. それでも長い場合は `ffmpeg ... setpts=0.5*PTS` で 2 倍速にする。
+
+---
+
+## React 制御コンポーネント（MUI 含む）の DOM 操作
+
+`element.click()` や直接代入だけだと React の state が更新されないケースがある。
+
+### controlled input / textarea の値設定
+
+```javascript
+const setVal = (el, v) => {
+  const proto = el.tagName === 'TEXTAREA'
+    ? window.HTMLTextAreaElement.prototype
+    : window.HTMLInputElement.prototype;
+  Object.getOwnPropertyDescriptor(proto, 'value').set.call(el, v);
+  el.dispatchEvent(new Event('input', { bubbles: true }));
+  el.dispatchEvent(new Event('change', { bubbles: true }));
+  el.dispatchEvent(new Event('blur', { bubbles: true }));
+};
+```
+
+### MUI Select を開く
+
+```javascript
+// .click() だけだと開かない。mousedown まで dispatch する
+const sel = formControl.querySelector('.MuiSelect-select');
+sel.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 0 }));
+sel.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0 }));
+sel.click();
+// 開いた後、別 evaluate で role=option を .click() で選択する
+```
+
+### MUI Autocomplete を開く
+
+入力 input の id を取得して `browser_click #<id>` で開く（mousedown 等が必要なため evaluate の `.click()` では開かないケースがある）。option の選択は evaluate の `.click()` で可。
+
+### モーダル内の要素特定
+
+複数モーダルが重なる可能性があるので必ず `document.querySelector('[role="dialog"]')` を起点に探索。可視性は `el.offsetParent !== null` でフィルタ。
+
+```javascript
+const dialog = document.querySelector('[role="dialog"]');
+const dt = Array.from(dialog.querySelectorAll('input[placeholder="YYYY-MM-DD hh:mm"]'))
+  .find(i => i.offsetParent !== null);
+```
+
+### snackbar が画面外に出てしまう
+
+`browser_resize` で viewport を 1400×1000 にしても、`window.innerWidth/innerHeight` は実装上 1750×1250 などになることがある。MUI Snackbar が録画枠外に位置するケースがあるので、エラー確認は `browser_console_messages level=error` で取るのが確実。
 
 ---
 
