@@ -65,3 +65,6 @@ source ~/.config/zsh/ask.sh
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
+
+# mise (node / python のバージョン管理。shim を PATH 先頭に置くため末尾で activate)
+eval "$(~/.local/bin/mise activate zsh)"
