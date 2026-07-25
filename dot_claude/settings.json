@@ -57,7 +57,6 @@
     "ask": [],
     "defaultMode": "auto"
   },
-  "model": "claude-opus-4-7",
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline-command.sh"
@@ -83,6 +82,5 @@
   "autoCompactEnabled": false,
   "remoteControlAtStartup": true,
   "agentPushNotifEnabled": true,
-  "skipAutoPermissionPrompt": true,
-  "autoUpdatesChannel": "stable"
+  "skipAutoPermissionPrompt": true
 }
