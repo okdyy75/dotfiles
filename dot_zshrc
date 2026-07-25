@@ -53,6 +53,9 @@ export PATH="/opt/homebrew/opt/postgresql@17/bin:$PATH"
 export PATH="$PATH:$HOME/.lmstudio/bin"
 # End of LM Studio CLI section
 
+# ask - ローカルLLM(Ollama)で日本語→macOSシェルコマンド提案
+source ~/.config/zsh/ask.sh
+
 # kiro
 [[ "$TERM_PROGRAM" == "kiro" ]] && . "$(kiro --locate-shell-integration-path zsh)"
 
