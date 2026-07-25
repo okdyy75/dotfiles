@@ -8,3 +8,5 @@ KNOWLEDGE.md
 .playwright-mcp
 bk
 workspace.yml
+*.log
+lefthook-local.yml
