@@ -1,0 +1,46 @@
+#!/bin/sh
+# ~/.claude/settings.json のうち、ここに書いたキーだけを管理する。
+# hooks（Orca が自動生成）と autoMode（会社の環境情報）は各マシンの値をそのまま残す。
+current=$(cat)
+[ -n "$current" ] || current='{}'
+if ! command -v jq >/dev/null 2>&1; then
+  printf '%s\n' "$current"
+  exit 0
+fi
+printf '%s\n' "$current" | jq --indent 2 '. * {
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:localhost)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:api.github.com)",
+      "WebFetch(domain:docs.anthropic.com)",
+      "mcp__playwright"
+    ],
+    "deny": [
+      "Read(./bk/**)",
+      "Bash(rm -rf:*)",
+      "Bash(cloud-sql-proxy:*)",
+      "Bash(heroku:*)"
+    ],
+    "ask": [],
+    "defaultMode": "auto"
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline-command.sh"
+  },
+  "effortLevel": "high",
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "effortLevel": "xhigh"
+    }
+  },
+  "plansDirectory": "./.claude/plans",
+  "skipDangerousModePermissionPrompt": true,
+  "autoCompactEnabled": false,
+  "switchModelsOnFlag": false,
+  "remoteControlAtStartup": true,
+  "skipAutoPermissionPrompt": true,
+  "syncClaudeAiPlugins": false
+}'

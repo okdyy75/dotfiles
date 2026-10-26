@@ -16,16 +16,7 @@
 			"path": ".copilot"
 		},
 		{
-			"path": ".kiro"
-		},
-		{
-			"path": ".ollama"
-		},
-		{
 			"path": ".gemini"
-		},
-		{
-			"path": ".opencode"
 		}
 	],
 	"settings": {}
