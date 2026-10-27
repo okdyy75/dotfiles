@@ -1,0 +1,24 @@
+{{- /* chezmoi:modify-template */ -}}
+{{- /*
+  ~/.codex/config.toml のうち、ここに書いたキーだけを管理する。
+  model・marketplaces・projects・hooks.state などアプリが書くものは各マシンの値を残す。
+  notify は無いときだけ入れる（Computer Use が自分の notify に差し替えるため）。
+  管理するキーが既に揃っていれば、元のファイルをそのまま返す（書式を崩さない）。
+*/ -}}
+{{- $c := dict -}}
+{{- if .chezmoi.stdin -}}{{- $c = fromToml .chezmoi.stdin -}}{{- end -}}
+{{- $before := toToml $c -}}
+{{- $c = setValueAtPath "model_reasoning_effort" "high" $c -}}
+{{- $c = setValueAtPath "personality" "pragmatic" $c -}}
+{{- $c = setValueAtPath "mcp_servers.playwright.command" "npx" $c -}}
+{{- $c = setValueAtPath "mcp_servers.playwright.args" (list "@playwright/mcp@latest") $c -}}
+{{- $c = setValueAtPath "plugins.github@openai-curated.enabled" true $c -}}
+{{- $c = setValueAtPath "shell_environment_policy.inherit" "core" $c -}}
+{{- if not (hasKey $c "notify") -}}
+{{-   $c = setValueAtPath "notify" (list "bash" "-lc" `osascript -e "display notification \"タスクが完了しました\" with title \"Codex\" sound name \"Blow\""`) $c -}}
+{{- end -}}
+{{- if and .chezmoi.stdin (eq (toToml $c) $before) -}}
+{{- .chezmoi.stdin -}}
+{{- else -}}
+{{- toToml $c -}}
+{{- end -}}
